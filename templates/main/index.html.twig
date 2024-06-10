@@ -1,0 +1,345 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('app') }}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+
+{% block body %}
+    <main class="main" id="top">
+        <div class="container" data-layout="container">
+
+            {{ include('_sidebar.html.twig') }}
+
+            <div class="content">
+
+                {{ include('_navbar.html.twig') }}
+                <div class="row g-3 mb-3">
+                    {% for flash in app.flashes('success') %}
+                        <div class="alert alert-success ">{{ flash }}</div>
+                    {% endfor %}
+                    <div class="col-lg-12">
+                        <div class="card h-100">
+                            <div class="bg-holder bg-card"></div>
+                            <div class="card-header z-index-1">
+                                <h5 class="text-primary">Bienvenue {{ user.fName }}</h5>
+                                <h6 class="text-600">Voici votre avancement dans le cycle de recrutement </h6>
+                                <p class="text-warning fs--1">
+                                    {% if (state =='preRegOpen') %}
+                                        Veuillez remplir le formulaire de préinscription
+                                    {% elseif (state =='preRegSubmitted') or (state =='preRegClosedSubmitted') %}
+                                        Votre réponse est prise en compte. Le résultat vous sera envoyé par mail (vérifier votre boîte Spam)
+                                    {% elseif (state =='preRegClosed') %}
+                                        Vous ne pouvez plus remplir le formulaire de préinscription
+                                    {% elseif (state =='readyForInterview') %}
+                                        Félicitations ! Maintenant vous pouvez réserver votre entretien !
+                                    {% elseif (state =='hasInterview') %}
+                                        Bonne chance pour votre entretien !
+                                    {% elseif (state =='hasInterview') and (user.interview.end < date()) %}
+                                        Nous espérerons que l'entretien est bien passé ! Le résultat vous sera envoyé par mail (vérifier votre boîte Spam)
+                                    {% elseif (state =='trialPeriod') %}
+                                        Félicitations et bonne chance pour la période d'essai !
+                                    {% elseif (state =='accepted') %}
+                                        Félicitations ! Welcome to the family !
+                                    {% endif %}
+
+                                </p>
+                            </div>
+                            <div class="card-body z-index-1">
+                                <div class="progress mb-3 rounded-pill" style="height: 6px;">
+                                    <div class="progress-bar bg-progress-gradient rounded-pill" role="progressbar"
+                                         style="width: {{ pourcentage }}%" aria-valuenow="43.72" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                                <p class="mb-1 text-primary">{{ pourcentage }}% accompli</p>
+                                <p class="fs--2 mb-0"> S'il ya des ambiguités veuillez nous contacter sur <a href="https://optimaje.com/contact2022/" target="_blank"> ce formulaire </a> ou à travers nous appeler sur <a href="tel:+21626076711"> ce numéro</a> </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-4 col-md-4 col-sm-4">
+                        <div class="card {% if state !='preRegOpen' %}  disabled-custom opacity-50 {% endif %} h-100">
+                            <div class="card-header pb-0">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="mb-1 fs--2   {% if user.Result %}{% if (user.Result.getPreRegistration == true)and (user.Result.isPreRegistrationEmail) %}text-danger{%  else %}text-warning{%  endif %}{% else %}text-warning{%  endif %}">  {% if user.Result %}{% if (user.Result.getPreRegistration == true)and (user.Result.isPreRegistrationEmail) %}Terminé{% else %}En cours{% endif %}{% else %}En Cours{% endif %}</p>
+                                        <h5 class="text-primary fs-0">Présélection</h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="bg-soft-primary px-3 py-3 rounded-circle text-center"
+                                             style="width:60px;height:60px;">
+                                            <h5 class="text-primary mb-0 d-flex flex-column mt-n1">
+                                                <span>{{ recruitmentSession.RegistrationEnd | date("d") }}</span><small
+                                                        class="text-primary fs--2 lh-1">{{ recruitmentSession.RegistrationEnd | date("M") }}</small>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex justify-content-between align-items-end">
+
+
+                                    <div >
+                                        <a href="{{ path('app_pre_registration_form') }}"
+                                           class="btn btn-success w-100 fs--1" type="button">Remplir le formulaire</a>
+                                    </div>
+                                <div>
+                                    <lord-icon
+                                            src="https://cdn.lordicon.com/jvknurtv.json"
+                                            trigger="loop"
+                                            colors="primary:#f38e47,secondary:#e9263a"
+                                            style="width:40px;height:40px">
+                                    </lord-icon>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if recruitmentSession.collectiveInterview %}
+                        <div class="col-xxl-3 col-md-4 col-sm-4">
+                            <div class="card {% if (state !='pendingCollectiveDate') and (state !='hasCollectiveInterview') %}  disabled-custom opacity-50 {% endif %} h-100">
+                                <div class="card-header pb-0">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="mb-1 fs--2   {% if user.Result %}{% if (user.Result.CollectiveInterviews == true)and (user.Result.isCollectiveInterviewsEmail) %}text-danger{%  else %}text-warning{%  endif %}{% else %}text-warning{%  endif %}">  {% if user.Result %}{% if (user.Result.CollectiveInterviews == true)and (user.Result.isCollectiveInterviewsEmail) %}Terminé{% else %}En cours{% endif %}{% else %}En Cours{% endif %}</p>
+                                            <h5 class="text-primary fs-0">Collective Interviews</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="bg-soft-primary px-3 py-3 rounded-circle text-center"
+                                                 style="width:60px;height:60px;">
+                                                <h5 class="text-primary mb-0 d-flex flex-column mt-n1">
+                                                    <span>{{ recruitmentSession.CollectiveInterviewsEnd | date("d") }}</span><small
+                                                            class="text-primary fs--2 lh-1">{{ recruitmentSession.CollectiveInterviewsEnd | date("M") }}</small>
+
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex align-items-end">
+                                    <div class="row g-3 justify-content-between">
+
+                                        <div class="col-auto">
+                                            <button class="btn btn-success w-100 fs--1" type="button"
+                                                    data-bs-target="#collectiveInterview" data-bs-toggle="modal">
+                                                Détails de l'entretien
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if recruitmentSession.technicalTest %}
+                        <div class="col-xxl-3 col-md-4 col-sm-4">
+                            <div class="card {% if state !='testPeriodStart' %}  disabled-custom opacity-50 {% endif %} h-100">
+                                <div class="card-header pb-0">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="mb-1 fs--2 {% if user.Result %}{% if (user.Result.getTechnicalTestResult == true)and (user.Result.isTechnicalTestEmail) %}text-danger{%  else %}text-warning{%  endif %}{% else %}text-warning{%  endif %}">  {% if user.Result %}{% if (user.Result.getTechnicalTestResult == true)and (user.Result.isTechnicalTestEmail) %}Terminé{% else %}En cours{% endif %}{% else %}En Cours{% endif %}</p>
+                                            <h5 class="text-primary fs-0">Technical Test</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="bg-soft-primary px-3 py-3 rounded-circle text-center"
+                                                 style="width:60px;height:60px;">
+                                                <h5 class="text-primary mb-0 d-flex flex-column mt-n1">
+                                                    <span>{{ recruitmentSession.TechnicalTestEnd | date("d") }}</span><small
+                                                            class="text-primary fs--2 lh-1">{{ recruitmentSession.TechnicalTestEnd | date("M") }}</small>
+
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex align-items-end">
+                                    <div class="row g-3 justify-content-between">
+
+                                        <div class="col-auto">
+                                            <a href="{{ path('app_technical_test_submit') }}"
+                                               class="btn btn-success w-100 fs--1" type="button">Envoyer votre test
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-xxl-3 col-md-4 col-sm-4">
+                        <div class="card {% if (state !='hasInterview') and (state !='readyForInterview') and (calendarState !='canAccessCalendar') %}  disabled-custom opacity-50 {% endif %} h-100">
+                            <div class="card-header pb-0">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="mb-1 fs--2 {% if user.Result %}{% if (user.Result.Interview == true)and (user.Result.isInterviewEmail) %}text-danger{%  else %}text-warning{%  endif %}{% else %}text-warning{%  endif %}">  {% if user.Result %}{% if (user.Result.Interview == true)and (user.Result.isInterviewEmail) %}Terminé{% else %}En cours{% endif %}{% else %}En cours{% endif %}</p>
+                                        <h5 class="text-primary fs-0">Entretien</h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="bg-soft-primary px-3 py-3 rounded-circle text-center"
+                                             style="width:60px;height:60px;">
+                                            <h5 class="text-primary mb-0 d-flex flex-column mt-n1">
+                                                <span>{{ recruitmentSession.getInterviewsEnd | date("d") }}</span><small
+                                                        class="text-primary fs--2 lh-1">{{ recruitmentSession.getInterviewsEnd | date("M") }}</small>
+
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex align-items-end">
+
+
+
+                                        <div>
+                                            <button class="  btn btn-success mb-2 fs--1 "
+                                                    type="button" data-bs-target="#individualInterview"
+                                                    data-bs-toggle="modal">Détails de l'entretien
+                                            </button>
+                                            {% if recruitmentSession.getBookingForInterview == true %}
+                                                <a href="{{ path('app_individual_interview_booking') }}"
+                                                   class=" col-sm btn btn-success  fs--1  {% if calendarState =='cannotAccessCalendar' %} disabled  {% endif %}"
+                                                   type="button">Réserver un entretien
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                <div>
+
+                                    <lord-icon
+                                            src="https://cdn.lordicon.com/jvknurtv.json"
+                                            trigger="loop"
+                                            colors="primary:#f38e47,secondary:#e9263a"
+                                            style="width:40px;height:40px">
+                                    </lord-icon>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    {% if recruitmentSession.trialPeriod %}
+                        <div class="col-xxl-3 col-md-4 col-sm-4">
+                            <div class="card {% if state !='testPeriodStart' %}  disabled-custom opacity-50 {% endif %} h-100">
+                                <div class="card-header pb-0">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="mb-1 fs--2 {% if user.Result %}{% if (user.Result.getTrialPeriod == true)and (user.Result.isTrialPeriodEmail) %}text-danger{%  else %}text-warning{%  endif %}{% else %}text-warning{%  endif %}">  {% if user.Result %}{% if (user.Result.getTrialPeriod == true)and (user.Result.isTrialPeriodEmail) %}Terminé{% else %}En cours{% endif %}{% else %}En Cours{% endif %}</p>
+                                            <h5 class="text-primary fs-0">Période d'essai</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="bg-soft-primary px-3 py-3 rounded-circle text-center"
+                                                 style="width:60px;height:60px;">
+                                                <h5 class="text-primary mb-0 d-flex flex-column mt-n1">
+                                                    <span>{{ recruitmentSession.getTrialPeriodSelectionEnd | date("d") }}</span><small
+                                                            class="text-primary fs--2 lh-1">{{ recruitmentSession.getTrialPeriodSelectionEnd | date("M") }}</small>
+
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-end align-items-end">
+                                    <lord-icon
+                                            src="https://cdn.lordicon.com/xorddmfu.json"
+                                            trigger="loop"
+                                            colors="primary:#f38e47,secondary:#e9263a"
+                                            style="width:40px;height:40px">
+                                    </lord-icon>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="row g-3 mb-3">
+                        <div class="">
+                            <div class="card h-100">
+                                <div class="card-header pb-0">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5 class="text-primary fs-0">Guide d'utilisation</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-center align-items-end">
+                                    <iframe width="928" height="499" src="https://www.youtube.com/embed/wna5jVKCppc" title="Guide d'utilisation de la plateforme de recrutement JOIN" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="kanban-modal-label-1"
+                 aria-hidden="true" id="collectiveInterview">
+                <div class="modal-dialog mt-6" role="document">
+                    <div class="modal-content border-0">
+                        <div class="position-absolute top-0 end-0 mt-2 me-2 z-index-1">
+                            <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center p-0">
+                            <div class="p-4 pb-0">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="mb-3">Collective Interview Details</h5>
+                                        <p class="text-word-break fs--1">
+                                            {% if user.getCollectiveInterview %}
+                                                <strong>Date & Time
+                                                    : </strong> {{ user.getCollectiveInterview.getStart | date("l F d Y H:i") }}
+                                                <br>
+                                                <strong>Place : </strong> {{ user.getCollectiveInterview.getPlace }}
+                                            {% else %}
+                                                You will find your interview details soon.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="kanban-modal-label-1"
+                 aria-hidden="true" id="individualInterview">
+                <div class="modal-dialog mt-6" role="document">
+                    <div class="modal-content border-0">
+                        <div class="position-absolute top-0 end-0 mt-2 me-2 z-index-1">
+                            <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center p-0">
+                            <div class="p-4 pb-0">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="mb-3">Détails de l'entretien</h5>
+                                        <p class="text-word-break fs--1">
+                                            {% if user.getInterview %}
+                                                <strong>Date
+                                                    : </strong> {{ user.getInterview.getStart | date("d/m/Y H:i") }}
+                                                <br>
+                                                {% if user.getInterview.getPlace %}
+                                                <strong>Localisation : </strong> {{ user.getInterview.getPlace }}
+                                                 {% endif %}
+                                            {% else %}
+                                                Vous trouverez les détails de votre entretien prochainement.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

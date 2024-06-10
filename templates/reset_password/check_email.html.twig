@@ -1,0 +1,26 @@
+{% extends 'base_simple.html.twig' %}
+
+{% block title %}Email de réinitialisation du mot de passe envoyé{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body p-4 p-sm-5">
+            <div class="text-center">
+                <h4 class="mb-2">Veuillez vérifier votre courriel !</h4>
+                <p>Si un compte correspondant à votre adresse e-mail existe, un e-mail vient d'être envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe.
+                    lien que vous pouvez utiliser pour réinitialiser votre mot de passe.</p>
+                <p>
+                    Ce lien expire dans <strong>1 heure</strong>.</p>
+                <p>
+                    Si vous ne recevez pas d'e-mail, vérifiez votre dossier spam.
+                </p>
+                <div class="position-relative mt-4">
+                    <hr class="bg-300">
+                    <div class="divider-content-center">OU</div>
+                </div>
+                <a class="btn btn-falcon-default btn-sm mt-3" href="{{ path('app_forgot_password_request') }}">Essayez encore une fois <span class="fas fa-chevron-right me-1"
+                                data-fa-transform="shrink-4 down-1"></span></a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

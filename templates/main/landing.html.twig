@@ -1,0 +1,20 @@
+{% extends 'base_simple.html.twig' %}
+
+{% block title %}Se connecter{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body p-4 p-sm-5">
+            <div class="row flex-between-center mb-2">
+                <div class="col-auto text-center">
+                    <h5>Bienvenue à "Junior Online Integration Network"</h5>
+                </div>
+            </div>
+            <div >
+                <a href="{{ path('app_register') }}" class="btn btn-falcon-primary btn-sm d-block mt-3">S'inscrire</a>
+                <a href="{{ path('app_login') }}" class="btn btn-falcon-primary btn-sm d-block mt-3">Se connecter</a>
+                <p class="fs--2 mt-3 mb-0"> S'il ya des ambiguités veuillez nous contacter sur <a href="https://optimaje.com/contact2022/" target="_blank"> ce formulaire </a> ou à travers nous appeler sur <a href="tel:+21626076711"> ce numéro</a> </p>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

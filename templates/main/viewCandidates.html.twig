@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('app') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+
+{% block body %}
+    <main class="main" id="top">
+        <div class="container" data-layout="container">
+
+            {{ include('_sidebar.html.twig') }}
+
+            <div class="content">
+                {{ include('_navbar.html.twig') }}
+                {% for user in users %}
+                    <div class="col-xxl-3 col-md-6">
+                        <div class="card ">
+                            <div class="card-header pb-0">
+                                <img src="{{ asset(user.imgPath) }}">
+                            </div>
+                            <div class="card-body ">
+                                <h4>user.fname user.lname</h4>
+                                <h6>user.result.chosenDepartment.name</h6>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+        </div>
+    </main>
+
+{% endblock %}
